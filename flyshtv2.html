@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Product Showcase</title>
+    <!--
+        *************************************************************************************
+        * Project: Minimal Product Showcase Website (FLY SHT)
+        * Author: Gemini
+        * Date: July 2025
+        * Description: This single-page application (SPA) is designed to showcase products
+        * with categories, prices, and detailed descriptions, inspired by
+        * the minimalist aesthetic of allchinabuysheets.com. It features
+        * a product grid view and a detailed product view, navigable via
+        * category links and clickable product cards.
+        *************************************************************************************
+    -->
+
+    <!--
+        *************************************************************************************
+        * Design Philosophy & Palette
+        *************************************************************************************
+        Chosen Palette: Stark White & Black
+        This minimalist theme is designed to replicate the clean, product-focused aesthetic
+        observed in the provided screenshot. It features a pure white background (#ffffff),
+        crisp black text (#000000), and subtle light gray accents (#e5e7eb, #f8f8f8, #4a5568)
+        for borders, image backgrounds, and secondary text, respectively. This palette
+        ensures that the products themselves remain the central visual focus, minimizing
+        distractions and creating a professional, uncluttered look.
+    -->
+
+    <!--
+        *************************************************************************************
+        * Application Structure Plan (Information Architecture)
+        *************************************************************************************
+        The Single-Page Application (SPA) is structured to provide a straightforward and
+        intuitive user experience for browsing products, now enhanced with a dedicated
+        product detail view.
+
+        1.  **Fixed Header:** A sticky header at the top contains the site title ("FLY SHT")
+            and the main navigation links (Home, Shoes, Hoodies/Sweaters, etc.). This header
+            remains visible as the user scrolls, providing constant access to categories.
+
+        2.  **Dynamic Category Title:** Below the header, a prominent <h2> element
+            (`#current-category-title`) displays the name of the currently selected product
+            category. This provides clear context to the user about the products being viewed.
+
+        3.  **Product Grid View (`#product-list-view`):** The initial main content area
+            features a responsive grid (`#product-grid`) that dynamically displays product cards.
+            Each card presents a product image, its title, and pricing. Clicking a product card
+            transitions to the detail view.
+
+        4.  **Product Detail View (`#product-detail-view`):** This new section is initially hidden.
+            When a product card is clicked, this view becomes visible, showcasing the selected
+            product with a main image, an optional secondary image, the product title, price,
+            and a detailed description. A "Back to Products" button allows users to return to
+            the product grid.
+
+        This structure was chosen to directly replicate the visual layout and user flow
+        observed in the reference screenshots. It prioritizes product visibility and a clear,
+        functional navigation system, making it easy for users to explore different product
+        categories and then drill down into specific product details. The design emphasizes
+        a clean, tile-based presentation for the list view and a clear, image-and-text focused
+        layout for the detail view.
+    -->
+
+    <!--
+        *************************************************************************************
+        * Visualization & Content Choices
+        *************************************************************************************
+        -   **Product List (Grid View):**
+            -   **Goal:** Inform and Organize.
+            -   **Visualization Method:** Interactive Product Card Grid.
+            -   **Interaction:** Clicking header navigation links filters the grid to show products
+                of the selected category. Clicking a product card transitions to the product
+                detail view. Hover effects on cards are subtle.
+            -   **Justification:** A grid layout is effective for showcasing a catalog, visually
+                appealing for scanning. Each card is a self-contained unit displaying key info
+                (image, title, price), directly mirroring the design in the main product list screenshot.
+            -   **Library/Method:** Dynamic HTML generation using vanilla JavaScript.
+
+        -   **Product Detail (Single Product View):**
+            -   **Goal:** Inform and provide in-depth details.
+            -   **Visualization Method:** Two-column layout with large product images on the left
+                and text details on the right.
+            -   **Interaction:** A "Back to Products" button returns the user to the grid view.
+            -   **Justification:** Directly replicates the layout from the provided product detail
+                screenshot, allowing for a focused view of a single product with prominent imagery
+                and a dedicated area for comprehensive text description and pricing.
+            -   **Library/Method:** Dynamic HTML population using vanilla JavaScript.
+
+        -   **Product Categories:**
+            -   **Goal:** Organize and Filter.
+            -   **Visualization Method:** Header Navigation Links & Main Category Title.
+            -   **Interaction:** Clicking a navigation link updates the product grid and the
+                prominent category title.
+            -   **Justification:** This approach aligns with the navigation and filtering mechanism
+                shown in the reference screenshots, providing a consistent user experience.
+            -   **Library/Method:** HTML links with JavaScript event listeners and text content updates.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for 'Inter' typeface -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS for fine-tuning design elements not fully covered by Tailwind, or for specific overrides -->
+    <style>
+        /* Base styles for the body, setting font and background/text colors */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* Pure white background */
+            color: #1a202c; /* Very dark gray for text, close to black */
+        }
+        /* Styling for individual product cards in the grid view */
+        .product-card {
+            border: 1px solid #DFE0E2; /* Light gray border for separation */
+            border-radius: 0; /* No rounded corners to match screenshot's sharp edges */
+            overflow: hidden; /* Ensures content stays within card boundaries */
+            cursor: pointer; /* Indicates clickable item */
+        }
+        /* Subtle hover effect for product cards, adding a light shadow */
+        .product-card:hover {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Very subtle shadow on hover */
+        }
+        /* Styling for the active navigation link in the header */
+        .nav-link.active {
+            font-weight: 600; /* Semi-bold font weight for active link */
+            color: #000000; /* Black color for active link */
+        }
+        /* Adjusting horizontal padding for the main container to match screenshot's spacing */
+        .container {
+            padding-left: 1rem; /* Default padding for smaller screens */
+            padding-right: 1rem; /* Default padding for smaller screens */
+        }
+        /* Responsive padding adjustments for medium screens (sm breakpoint) */
+        @media (min-width: 640px) {
+            .container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+        /* Responsive padding adjustments for large screens (lg breakpoint) */
+        @media (min-width: 1024px) {
+            .container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+        /* Styling for the product grid container */
+        #product-grid {
+            gap: 1px; /* Very small gap to simulate tight, contiguous tiles as seen in screenshot */
+            border-top: 2px solid #DFE0E2; /* Top border for the entire grid */
+            border-left: 2px solid #DFE0E2; /* Left border for the entire grid */
+        }
+        /* Further styling for individual product cards within the grid */
+        .product-card {
+            border: none; /* Remove individual card borders as grid container handles outer borders */
+            border-right: 2px solid #DFE0E2; /* Right border for each card to form vertical lines */
+            border-bottom: 2px solid #DFE0E2; /* Bottom border for each card to form horizontal lines */
+            padding: 0; /* Remove padding from card itself to ensure tight tile fit */
+        }
+        /* Styling for product images within cards in the grid view */
+        .product-card img {
+            width: 100%; /* Image takes full width of its container */
+            height: 250px; /* Fixed height for images to maintain consistent tile size */
+            object-fit: contain; /* Ensures the entire image is visible within its box, as seen in screenshot */
+            background-color: #ffffff; /* Very light gray background for image area */
+            padding: 1rem; /* Padding around the image inside the card's image area */
+        }
+        /* Styling for the text content area below the product image in grid view */
+        .product-card .p-4 {
+            padding: 0.5rem 1rem; /* Reduced padding for text below image to match tighter spacing */
+        }
+        /* Styling for product titles in grid view */
+        .product-card h3 {
+            font-size: 0.875rem; /* text-sm equivalent */
+            font-weight: 400; /* normal font-weight as seen in screenshot */
+            color: #1a202c; /* Dark text color */
+            margin-bottom: 0.25rem; /* Reduced margin below title */
+        }
+        /* Styling for product pricing in grid view */
+        .product-card p {
+            font-size: 0.875rem; /* text-sm equivalent */
+            color: #4a5568; /* Slightly lighter gray for price text */
+        }
+        /* Specific header styles to match the screenshot's design */
+        header {
+            border-bottom: 1px solid #e2e8f0; /* Light gray border at the bottom of the header */
+        }
+        /* Styling for the main site title in the header */
+        header h1 {
+            font-size: 1.125rem; /* text-lg equivalent */
+            font-weight: 700; /* font-bold equivalent */
+            color: #000000; /* Black color for the site title */
+        }
+        /* Styling for navigation links in the header */
+        header nav a {
+            font-size: 0.875rem; /* text-sm equivalent */
+            color: #4a5568; /* Gray color for navigation links */
+            font-weight: 400; /* Normal font-weight */
+        }
+        /* Hover effect for navigation links */
+        header nav a:hover {
+            color: #000000; /* Black on hover */
+        }
+        /* Styling for the prominent current category title */
+        #current-category-title {
+            font-size: 2.25rem; /* text-4xl equivalent */
+            font-weight: 700; /* font-bold equivalent */
+            color: #000000; /* Black color for the category title */
+            margin-bottom: 2rem; /* Margin below the category title */
+        }
+        
+        /* Styles for the "How to Buy" guide section */
+        #how-to-buy-section {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #374151;
+            line-height: 1.7;
+        }
+        #how-to-buy-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        #how-to-buy-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        #how-to-buy-section p {
+            margin-bottom: 1rem;
+        }
+
+        /* Styles for the category buttons section on the homepage */
+        #category-buttons-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        #category-buttons-section h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+        #category-buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .category-button {
+            background-color: #001BFF; /* Teal color from screenshot */
+            color: white;
+            border: none;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            max-width: 320px; /* Max width for buttons */
+            transition: background-color 0.2s;
+        }
+        .category-button:hover {
+            background-color: #5783db; /* Darker teal on hover */
+        }
+
+        /* Styles for the search bar */
+        #search-section {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        #search-form {
+            display: flex;
+            justify-content: center;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ffffff;
+            font-size: 1rem;
+        }
+        #search-button {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #001BFF;
+            background-color: #001BFF;
+            color: rgb(255, 255, 255);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #search-button:hover {
+            background-color: #5783db;
+        }
+
+        /*
+            *************************************************************************************
+            * Styles for the Product Detail View
+            *************************************************************************************
+        */
+        #product-detail-view {
+            display: none; /* Hidden by default */
+            grid-template-columns: 1fr; /* Single column layout on small screens */
+            gap: 2rem; /* Spacing between columns/rows */
+        }
+
+        @media (min-width: 768px) { /* Medium breakpoint (md) and larger */
+            #product-detail-view {
+                grid-template-columns: 1fr 1fr; /* Two columns on medium and larger screens */
+            }
+        }
+
+        /* Container for product images within the detail view */
+        .product-detail-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Styling for the main product image in the detail view */
+        #detail-main-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            object-fit: contain;
+            border: 0.5px solid #DFE0E2;
+            background-color: #ffffff;
+            padding: 1rem;
+        }
+
+        /* Container for thumbnail images */
+        #detail-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Styling for individual thumbnail images */
+        .thumbnail-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .thumbnail-image:hover {
+            border-color: #5783db;
+        }
+        .thumbnail-image.active {
+            border-color: #001BFF;
+        }
+
+        /* Container for product information (title, price, description) in detail view */
+        .product-detail-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Styling for the product title in the detail view */
+        .product-detail-info h2 {
+            font-size: 2.5rem; /* Larger title for detail page */
+            font-weight: 700; /* Bold font weight */
+            color: #000000; /* Black color */
+            margin-bottom: 0.5rem; /* Spacing below title */
+        }
+
+        /* Styling for the product price in the detail view */
+        .product-detail-info .price {
+            font-size: 1.5rem; /* Larger price for detail page */
+            font-weight: 600; /* Semi-bold font weight */
+            color: #1a202c; /* Dark gray color */
+            margin-bottom: 1.5rem; /* Spacing below price */
+        }
+
+        /* Styling for the product description in the detail view */
+        .product-detail-info .description {
+            font-size: 1rem; /* Standard text size */
+            color: #4a5568; /* Slightly lighter gray for description text */
+            line-height: 1.6; /* Improved readability */
+            margin-bottom: 2rem; /* Spacing below description */
+        }
+
+        /* Styling for the "Back to Products" button */
+        .back-button {
+            background-color: #f3f4f6; /* Light gray background */
+            color: #4b5563; /* Darker gray text color */
+            padding: 0.75rem 1.5rem; /* Padding inside the button */
+            border-radius: 0.25rem; /* Slightly rounded corners */
+            font-weight: 500; /* Medium font weight */
+            transition: background-color 0.2s; /* Smooth transition on hover */
+            display: inline-flex; /* Allows icon and text to align */
+            align-items: center; /* Vertically align items */
+            gap: 0.5rem; /* Spacing between icon and text */
+        }
+
+        /* Hover effect for the "Back to Products" button */
+        .back-button:hover {
+            background-color: #DFE0E2; /* Slightly darker gray on hover */
+        }
+        /* Container for the main image to position the magnifier button and lens */
+        .img-magnifier-container {
+            position: relative;
+            max-width: 400px; /* Adjust to your main image's max width */
+            width: 100%;
+        }
+        /* The magnifying glass lens */
+        .img-magnifier-glass {
+             position: absolute;
+             border: 3px solid #001BFF; /* Lens border color */
+             border-radius: 50%;
+                cursor: none;
+             width: 150px; /* Size of the lens */
+             height: 150px;
+        }
+        /* The button to turn the magnifier on/off */
+        #magnify-toggle-btn {
+             position: absolute;
+             bottom: 12px;    /* Changed from top: 12px; */
+             right: 12px;     /* Changed from left: 12px; */
+             left: auto;      /* Reset left */
+             top: auto;       /* Reset top */
+             z-index: 10;
+             background-color: rgba(255, 255, 255, 0.8);
+             border: 1px solid #ffffff;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             cursor: pointer;
+             transition: background-color 0.2s, color 0.2s;
+        }
+        #magnify-toggle-btn:hover {
+            background-color: white;
+        }
+        /* Style for when the magnifier is active */
+        #magnify-toggle-btn.active {
+             background-color: #001BFF; /* Active color */
+             color: white;
+             border-color: #5783db;
+        }
+
+        /* Logic to switch between magnify and close icons */
+        #magnify-toggle-btn .icon-magnify { display: block; }
+        #magnify-toggle-btn .icon-close { display: none; }
+        #magnify-toggle-btn.active .icon-magnify { display: none; }
+        #magnify-toggle-btn.active .icon-close { display: block; }
+
+        /* Styling for thumbnail images (optional but recommended) */
+        #detail-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            max-width: 400px; /* Match the main image container width */
+            width: 100%;
+        }
+        .thumbnail-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .thumbnail-image.active {
+            border-color: #001BFF; /* Highlight color for active thumbnail */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section: Contains the site title and main navigation links. It's sticky to remain visible on scroll. -->
+    <header class="bg-white py-4 sticky top-0 z-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <!-- Site Title / Logo Area -->
+            <h1 class="text-xl font-bold text-gray-900">FLY SHT</h1>
+            <!-- Desktop Navigation Menu -->
+            <nav id="main-nav" class="hidden md:flex items-center space-x-6">
+                <!-- Navigation links, each with a data-category attribute for filtering -->
+                <a href="#" data-category="All" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Home</a>
+                <a href="#" data-category="Shoes" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Shoes</a>
+                <a href="#" data-category="Hoodies/Sweaters" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Hoodies/Sweaters</a>
+                <a href="#" data-category="T-Shirts" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">T-Shirts</a>
+                <a href="#" data-category="Jackets" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Jackets</a>
+                <a href="#" data-category="Pants/Shorts" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Pants/Shorts</a>
+                <a href="#" data-category="Headwear" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Headwear</a>
+                <a href="#" data-category="Accessories" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Accessories</a>
+                <a href="#" data-category="Other Stuff" class="nav-link text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Other Stuff</a>
+            </nav>
+            <!-- Mobile Menu Button (hamburger icon) -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-700 hover:text-gray-900 focus:outline-none">
+                    <span class="block w-6 h-0.5 bg-current my-1.5"></span>
+                    <span class="block w-6 h-0.5 bg-current my-1.5"></span>
+                    <span class="block w-6 h-0.5 bg-current my-1.5"></span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Navigation Menu: Hidden by default, toggled by the mobile menu button -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <!-- Mobile navigation links, mirroring desktop links -->
+            <a href="#" data-category="All" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="#" data-category="Shoes" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Shoes</a>
+            <a href="#" data-category="Hoodies/Sweaters" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Hoodies/Sweaters</a>
+            <a href="#" data-category="T-Shirts" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">T-Shirts</a>
+            <a href="#" data-category="Jackets" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Jackets</a>
+            <a href="#" data-category="Pants/Shorts" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Pants/Shorts</a>
+            <a href="#" data-category="Headwear" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Headwear</a>
+            <a href="#" data-category="Accessories" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Accessories</a>
+            <a href="#" data-category="Other Stuff" class="nav-link block py-3 px-4 text-sm text-gray-700 hover:bg-gray-100">Other Stuff</a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Search Bar Section -->
+        <section id="search-section">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Search for products...">
+                <button type="submit" id="search-button">Search</button>
+            </form>
+        </section>
+
+        <!-- Category Buttons Section -->
+        <section id="category-buttons-section">
+            <h2>Browse using the buttons below!</h2>
+            <div id="category-buttons-container">
+                <!-- Buttons will be dynamically injected here -->
+            </div>
+        </section>
+
+        <!-- "How to Buy" Guide Section (Homepage Content) -->
+        <section id="how-to-buy-section">
+            <h2>How do I buy from Acbuy/AllChinaBuy?</h2>
+            <p>Are you interested in purchasing items from AllChinaBuy but unsure how to navigate the process? Look no further, as we provide you with a detailed guide to help you make your purchases with ease. Whether you're eyeing a pair of shoes or any other fashion item, we've got you covered.</p>
+            
+            <h3>Finding the Items</h3>
+            <p>To begin your search, create accounts on Reddit and and join the r/FashionReps and r/AllChinaBuy Reddit and Discord server. These platforms will assist you in discovering the items you desire. For instance, in the Fashion Reps subreddit, you can search for specific products or explore comparisons. Often, users or bots will provide links to the items you're interested in. Remember, AllChinaBuy is a service that facilitates purchases but doesn't sell items directly. Therefore, you need to find the product links on other platforms supported by AllChinaBuy. Product links can be found in various spreadsheets made by the community.</p>
+            
+            <h3>Using Product Links</h3>
+            <p>Once you have the link to the item you wish to purchase, simply copy it and paste it into the search bar on the AllChinaBuy website. Alternatively, you can use the reverse image search feature by uploading a photo of the item to find similar products. This method proves useful when you can't locate an item through regular searching.</p>
+            
+            <h3>Understanding Product Details</h3>
+            <p>Upon reaching the item page on AllChinaBuy, you'll be greeted with a plethora of choices and information. Take a moment to familiarize yourself with the various options, including color, size, and version. When selecting the size, make sure to follow the provided instructions or leave a note specifying your preferred size. Some items may have a limited range of sizes, so choose carefully based on the available measurements or size charts.</p>
+            
+            <h3>Deciphering Versions and Batches</h3>
+            <p>Items may come in different versions or batches, each with its own quality and features. To determine the best version for your desired item, visit platforms like Yupoo, where you can find cataloged images and detailed comparisons. These comparisons will help you make an informed decision regarding the version to choose.</p>
+            
+            <h3>Viewing QC Item Photos</h3>
+            <p>To inspect actual photos of the product instead of stock images, you can use the qc.photos website. Simply paste the original product link and gain access to a comprehensive collection of photos. This feature allows you to scrutinize the item from various angles and even view additional photos that users have paid for.</p>
+            
+            <h3>Calculating Costs</h3>
+            <p>AllChinaBuy provides a useful tool called the estimator, accessible by adding an item to your cart and clicking on it. This tool offers information regarding weight, size, and shipping costs. By selecting the appropriate shipping line and adjusting options like removing shoeboxes to reduce volume, you can estimate the total cost of your purchase accurately.</p>
+            
+            <h3>Placing an Order</h3>
+            <p>Once you have finalized your selections and reviewed the costs, proceed to add the items to your cart. During the checkout process, fill in the necessary details, agree to the terms and conditions, and complete the payment. If PayPal is unavailable, you can top up your balance and pay using the balance amount.</p>
+            
+            <h3>Order Processing and Shipping</h3>
+            <p>After placing your order, it will go through several stages. The status will change from "Process Pending" to "Purchased" once an agent is assigned and the item is purchased from the seller. Subsequently, it will change to "Seller Sent" when the seller dispatches the item to the warehouse. At this point, you'll receive an Express Tracking section to monitor the shipping progress within China. Eventually, the status will change to "Warehouse Received" when the warehouse acknowledges the arrival of your item.</p>
+            
+            <h3>Quality Check and Shipping Selection</h3>
+            <p>Once your item reaches the warehouse, it enters the quality check phase. You'll receive QC photos for inspection. After verifying the item's condition, you can proceed with the shipment. The shipping options will be displayed, allowing you to choose the one that best suits your needs. Keep in mind that faster shipping methods may incur higher costs.</p>
+            
+            <h3>Finalizing the Shipment</h3>
+            <p>When you're satisfied with the QC photos and shipping options, confirm the shipment. Your item will be prepared, packaged, and sent to the designated shipping address. You'll receive a tracking number that allows you to monitor the progress of your package until it arrives at your doorstep.</p>
+            
+            <p>By following this comprehensive guide, you'll be well-equipped to navigate the process of buying items from AllChinaBuy. Remember to join relevant communities, utilize the available tools, and make informed decisions when selecting products and shipping methods. Happy shopping!</p>
+        </section>
+
+        <!-- Section for the current category title (visible in list view) -->
+        <section id="category-title-section" class="mb-10 text-center" style="display: none;">
+            <h2 id="current-category-title" class="text-4xl font-bold text-gray-900 mb-8"></h2>
+        </section>
+
+        <!-- Product List View (Grid) -->
+        <section id="product-list-view" style="display: none;">
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <!-- Product cards will be dynamically injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Product Detail View (Hidden by default) -->
+        <section id="product-detail-view" class="grid md:grid-cols-2 gap-8">
+            <div class="product-detail-image-container">
+                <!-- Main Image Container with Magnifier Button -->
+                <div class="img-magnifier-container">
+                    <img id="detail-main-image" src="" alt="Main Product Image">
+                    <!-- Magnify Toggle Button -->
+                    <button id="magnify-toggle-btn" title="Toggle Zoom">
+                        <!-- Magnify Icon -->
+                        <svg class="icon-magnify w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                        </svg>
+                        <!-- Close Icon -->
+                        <svg class="icon-close w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Thumbnails Container -->
+                <div id="detail-thumbnails">
+                    <!-- Thumbnails will be injected here -->
+                </div>
+            </div>
+            <div class="product-detail-info">
+                <h2 id="detail-product-title" class="text-4xl font-bold text-gray-900"></h2>
+                <p id="detail-product-price" class="price"></p>
+                <p id="detail-product-description" class="description"></p>
+                <!-- Size Chart Section -->
+                <div id="size-chart-section" style="margin-bottom:2rem;">
+                    <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:0.5rem;">Size Chart</h3>
+                    <img id="size-chart-image" src="" alt="Size Chart" style="max-width:100%;border:1px solid #DFE0E2;">
+                </div>
+                <button id="back-to-products-button" class="back-button mt-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Products
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-100 py-6 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            <p>&copy; <span id="year"></span> FLY SHT. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!--
+        *************************************************************************************
+        * JavaScript for Dynamic Functionality
+        *************************************************************************************
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample product data with an array of image URLs for each product.
+            const products = [
+                {
+                    id: 1,
+                    name: "Arc'teryx LEAF Alpha Gen 2 Jacket",
+                    category: "Jackets",
+                    price: "¥89.20",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Jacket+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Jacket+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Jacket+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Jacket+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Jacket+5"
+                    ],
+                    description: "The Arc'teryx LEAF Alpha Gen 2 Jacket is a highly durable and weather-resistant shell designed for extreme conditions. It features a rugged GORE-TEX fabric for maximum protection against rain and wind, while remaining breathable. Ideal for tactical operations and harsh outdoor environments, providing superior performance and comfort.",
+                    sizeChart: "https://placehold.co/400x200?text=Jacket+Size+Chart"
+                },
+                {
+                    id: 2,
+                    name: "Arc'teryx Beta LT Jacket",
+                    category: "Jackets",
+                    price: "¥85.20",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Jacket+LT+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Jacket+LT+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Jacket+LT+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Jacket+LT+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Jacket+LT+5"
+                    ],
+                    description: "A versatile and lightweight jacket, the Arc'teryx Beta LT is engineered for a variety of mountain activities. Its minimalist design and packable nature make it an excellent choice for those seeking performance without bulk. Offers essential weather protection and breathability for changing conditions.",
+                    sizeChart: "https://placehold.co/400x200?text=Jacket+LT+Size+Chart"
+                },
+                {
+                    id: 3,
+                    name: "Arc'teryx + Beams Beta Jacket #1",
+                    category: "Jackets",
+                    price: "¥85.20",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Beams+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Beams+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Beams+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Beams+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Beams+5"
+                    ],
+                    description: "A unique collaboration between Arc'teryx and Beams, this Beta Jacket combines techhnical performance with urban style. ",
+                    sizeChart: "https://placehold.co/400x200?text=Beams+Jacket+Size+Chart"
+                },
+                {
+                    id: 4,
+                    name: "Arc'teryx + Beams Beta Jacket #2",
+                    category: "Jackets",
+                    price: "¥85.20",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Beams+Two+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Beams+Two+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Beams+Two+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Beams+Two+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Beams+Two+5"
+                    ],
+                    description: "Another exclusive collaboration, the Arc'teryx + Beams Beta Jacket #2 features a subtle color palette and all the technical prowess expected from Arc'teryx. It's a highly functional shell that provides excellent weather resistance and comfort, suitable for both city life and rugged trails.",
+                    sizeChart: "https://placehold.co/400x200?text=Beams+Two+Jacket+Size+Chart"
+                },
+                {
+                    id: 5,
+                    name: "Nike Air Force 1",
+                    category: "Shoes",
+                    price: "¥75.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=AF1+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=AF1+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=AF1+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=AF1+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=AF1+5"
+                    ],
+                    description: "The iconic Nike Air Force 1, a timeless classic in sneaker culture. Known for its clean lines, durable construction, and comfortable Air cushioning, it's a versatile shoe that complements any style. A must-have for sneaker enthusiasts and casual wear alike.",
+                    sizeChart: "https://placehold.co/400x200?text=AF1+Size+Chart"
+                },
+                {
+                    id: 6,
+                    name: "Adidas Ultraboost 22",
+                    category: "Shoes",
+                    price: "¥120.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=UB+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=UB+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=UB+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=UB+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=UB+5"
+                    ],
+                    description: "Experience ultimate comfort and energy return with the Adidas Ultraboost 22. Designed with a responsive Boost midsole and a supportive Primeknit upper, these running shoes provide an unparalleled ride for daily runs or long distances. Perfect for athletes seeking peak performance.",
+                    sizeChart: "https://placehold.co/400x200?text=UB+Size+Chart"
+                },
+                {
+                    id: 7,
+                    name: "Supreme Box Logo Hoodie",
+                    category: "Hoodies/Sweaters",
+                    price: "¥150.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Supreme+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Supreme+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Supreme+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Supreme+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Supreme+5"
+                    ],
+                    description: "The highly coveted Supreme Box Logo Hoodie in vibrant red. Crafted from premium heavyweight cotton, this iconic piece features the signature embroidered box logo. A staple for streetwear enthusiasts, offering both comfort and an unmistakable statement.",
+                    sizeChart: "https://placehold.co/400x200?text=Supreme+Hoodie+Size+Chart"
+                },
+                {
+                    id: 8,
+                    name: "Kith Williams III Hoodie",
+                    category: "Hoodies/Sweaters",
+                    price: "¥130.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Kith+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Kith+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Kith+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Kith+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Kith+5"
+                    ],
+                    description: "The Kith Williams III Hoodie combines a classic silhouette with premium craftsmanship. Made from custom-milled fleece, it offers exceptional softness and warmth. Features subtle Kith branding, making it a versatile and comfortable addition to any wardrobe.",
+                    sizeChart: "https://placehold.co/400x200?text=Kith+Hoodie+Size+Chart"
+                },
+                {
+                    id: 9,
+                    name: "Basic Crewneck T-Shirt",
+                    category: "T-Shirts",
+                    price: "¥25.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Tee+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Tee+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Tee+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Tee+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Tee+5"
+                    ],
+                    description: "An essential basic crewneck t-shirt, perfect for everyday wear. Made from soft, breathable cotton, it offers a comfortable fit and a versatile foundation for any outfit. A wardrobe staple that combines simplicity with quality.",
+                    sizeChart: "https://placehold.co/400x200?text=Tee+Size+Chart"
+                },
+                {
+                    id: 10,
+                    name: "Graphic Band Tee",
+                    category: "T-Shirts",
+                    price: "¥30.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Band+Tee+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Band+Tee+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Band+Tee+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Band+Tee+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Band+Tee+5"
+                    ],
+                    description: "Show off your style with this unique graphic band tee. Featuring a vintage-inspired print on soft, pre-shrunk cotton, it offers a comfortable and stylish look. Perfect for music lovers and those who appreciate unique apparel.",
+                    sizeChart: "https://placehold.co/400x200?text=Band+Tee+Size+Chart"
+                },
+                {
+                    id: 11,
+                    name: "Cargo Pants",
+                    category: "Pants/Shorts",
+                    price: "¥60.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Cargo+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Cargo+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Cargo+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Cargo+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Cargo+5"
+                    ],
+                    description: "Durable and functional cargo pants designed for utility and comfort. Multiple pockets provide ample storage, while the relaxed fit ensures freedom of movement. Ideal for outdoor activities or a rugged casual look.",
+                    sizeChart: "https://placehold.co/400x200?text=Cargo+Pants+Size+Chart"
+                },
+                {
+                    id: 12,
+                    name: "Denim Shorts",
+                    category: "Pants/Shorts",
+                    price: "¥45.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Denim+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Denim+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Denim+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Denim+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Denim+5"
+                    ],
+                    description: "Classic denim shorts, perfect for warm weather. Made from comfortable, high-quality denim with a timeless design, these shorts offers a relaxed fit for all-day comfort. A versatile addition to your summer wardrobe.",
+                    sizeChart: "https://placehold.co/400x200?text=Denim+Shorts+Size+Chart"
+                },
+                {
+                    id: 13,
+                    name: "Snapback Cap",
+                    category: "Headwear",
+                    price: "¥20.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Cap+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Cap+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Cap+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Cap+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Cap+5"
+                    ],
+                    description: "A classic snapback cap with an adjustable fit. Features a structured crown and flat brim, perfect for adding a sporty or casual touch to your outfit. Available in various colors to match your style.",
+                    sizeChart: "https://placehold.co/400x200?text=Snapback+Cap+Size+Chart"
+                },
+                {
+                    id: 14,
+                    name: "Bucket Hat",
+                    category: "Headwear",
+                    price: "¥18.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Hat+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Hat+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Hat+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Hat+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Hat+5"
+                    ],
+                    description: "Stay stylish and protected with this trendy bucket hat. Made from soft, breathable fabric, it offers comfortable sun protection and a relaxed, casual vibe. A fashionable accessory for any outdoor adventure.",
+                    sizeChart: "https://placehold.co/400x200?text=Bucket+Hat+Size+Chart"
+                },
+                {
+                    id: 15,
+                    name: "Leather Belt",
+                    category: "Accessories",
+                    price: "¥35.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Belt+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Belt+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Belt+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Belt+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Belt+5"
+                    ],
+                    description: "A high-quality genuine leather belt, perfect for completing any outfit. Features a classic buckle and durable construction, ensuring long-lasting wear and a sophisticated touch to your look.",
+                    sizeChart: "https://placehold.co/400x200?text=Leather+Belt+Size+Chart"
+                },
+                {
+                    id: 16,
+                    name: "Sunglasses Wayfarer",
+                    category: "Accessories",
+                    price: "¥28.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Sunnies+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Sunnies+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Sunnies+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Sunnies+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Sunnies+5"
+                    ],
+                    description: "Timeless Wayfarer-style sunglasses offering classic appeal and essential UV protection. Lightweight and comfortable, they are perfect for daily wear and add a touch of retro cool to your ensemble.",
+                    sizeChart: "https://placehold.co/400x200?text=Wayfarer+Sunglasses+Size+Chart"
+                },
+                {
+                    id: 17,
+                    name: "Collectible Vinyl Toy",
+                    category: "Other Stuff",
+                    price: "¥50.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Toy+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Toy+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Toy+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Toy+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Toy+5"
+                    ],
+                    description: "A limited edition collectible vinyl toy, perfect for enthusiasts and collectors. Features intricate detailing and a unique design, making it a standout piece for display or play. A must-have for any modern art toy collection.",
+                    sizeChart: "https://placehold.co/400x200?text=Collectible+Vinyl+Toy+Size+Chart"
+                },
+                {
+                    id: 18,
+                    name: "Limited Edition Art Print",
+                    category: "Other Stuff",
+                    price: "¥100.00",
+                    images: [
+                        "https://placehold.co/400x300/ffffff/000000?text=Art+1",
+                        "https://placehold.co/400x300/e0e0e0/000000?text=Art+2",
+                        "https://placehold.co/400x300/cccccc/000000?text=Art+3",
+                        "https://placehold.co/400x300/bbbbbb/000000?text=Art+4",
+                        "https://placehold.co/400x300/aaaaaa/000000?text=Art+5"
+                    ],
+                    description: "Elevate your space with this stunning limited edition art print. Printed on high-quality archival paper with vibrant, long-lasting inks, it captures the essence of contemporary art. Perfect for adding a unique touch to your home or office decor.",
+                    sizeChart: "https://placehold.co/400x200?text=Limited+Edition+Art+Print+Size+Chart"
+                }
+            ];
+
+            // Get references to key DOM elements for easier access and manipulation.
+            const searchForm = document.getElementById('search-form');
+            const searchInput = document.getElementById('search-input');
+            const howToBuySection = document.getElementById('how-to-buy-section');
+            const categoryButtonsSection = document.getElementById('category-buttons-section');
+            const categoryButtonsContainer = document.getElementById('category-buttons-container');
+            const productListView = document.getElementById('product-list-view');
+            const productDetailView = document.getElementById('product-detail-view');
+            const productGrid = document.getElementById('product-grid');
+            const currentCategoryTitle = document.getElementById('current-category-title');
+            const mainNav = document.getElementById('main-nav');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+            // Elements for the product detail view
+            const detailMainImage = document.getElementById('detail-main-image');
+            const detailThumbnails = document.getElementById('detail-thumbnails');
+            const detailProductTitle = document.getElementById('detail-product-title');
+            const detailProductPrice = document.getElementById('detail-product-price');
+            const detailProductDescription = document.getElementById('detail-product-description');
+            const backToProductsButton = document.getElementById('back-to-products-button');
+            const categoryTitleSection = document.getElementById('category-title-section');
+
+
+            // Dynamically extract all unique categories from the products data.
+            const allCategories = ['All', ...new Set(products.map(p => p.category))];
+
+            /**
+             * Renders product cards into the product grid based on a provided array of products.
+             * @param {Array} productsToRender - The array of product objects to display.
+             */
+            function renderProductCards(productsToRender) {
+                productGrid.innerHTML = '';
+                if (productsToRender.length === 0) {
+                    productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
+                    return;
+                }
+
+                productsToRender.forEach(product => {
+                    const productCardHtml = `
+                        <div class="product-card bg-white" data-product-id="${product.id}">
+                            <img src="${product.images[0]}" alt="${product.name}">
+                            <div class="p-4">
+                                <h3>${product.name}</h3>
+                                <p>${product.price}</p>
+                            </div>
+                        </div>
+                    `;
+                    productGrid.insertAdjacentHTML('beforeend', productCardHtml);
+                });
+            }
+
+            /**
+             * Renders the category buttons on the homepage.
+             */
+            function renderCategoryButtons() {
+                const productCategories = allCategories.filter(cat => cat !== 'All');
+                categoryButtonsContainer.innerHTML = '';
+                productCategories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.className = 'category-button';
+                    button.textContent = category;
+                    button.dataset.category = category;
+                    categoryButtonsContainer.appendChild(button);
+                });
+            }
+
+            /**
+             * Updates the active state of navigation links and the displayed category title.
+             * @param {string} selectedCategory - The category that is currently active.
+             */
+            function updateActiveCategory(selectedCategory) {
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active', 'text-gray-900');
+                    link.classList.add('text-gray-700');
+                });
+
+                document.querySelectorAll(`.nav-link[data-category="${selectedCategory}"]`).forEach(link => {
+                    link.classList.add('active', 'text-gray-900');
+                    link.classList.remove('text-gray-700');
+                });
+
+                currentCategoryTitle.textContent = selectedCategory;
+            }
+
+            /**
+             * Manages which view is displayed to the user.
+             * @param {string} view - The view to display ('home', 'list', 'search', 'detail').
+             * @param {string|number|Array} [data] - The category, product ID, or search results for the view.
+             */
+            function switchView(view, data) {
+                // Hide all main sections first
+                howToBuySection.style.display = 'none';
+                categoryButtonsSection.style.display = 'none';
+                productListView.style.display = 'none';
+                categoryTitleSection.style.display = 'none';
+                productDetailView.style.display = 'none';
+
+                if (view === 'home') {
+                    howToBuySection.style.display = 'block';
+                    categoryButtonsSection.style.display = 'block';
+                    updateActiveCategory('All');
+                } else if (view === 'list') {
+                    productListView.style.display = 'block';
+                    categoryTitleSection.style.display = 'block';
+                    const categoryProducts = products.filter(p => p.category === data);
+                    renderProductCards(categoryProducts);
+                    updateActiveCategory(data);
+                } else if (view === 'search') {
+                    productListView.style.display = 'block';
+                    categoryTitleSection.style.display = 'block';
+                    renderProductCards(data.results);
+                    updateActiveCategory(''); // No category is active during search
+                    currentCategoryTitle.textContent = `Search Results for: "${data.query}"`;
+                } else if (view === 'detail') {
+                    const productId = data;
+                    const product = products.find(p => p.id === productId);
+                    if (!product) return;
+
+                    detailMainImage.src = product.images[0];
+                    detailMainImage.alt = product.name;
+                    
+                    detailThumbnails.innerHTML = '';
+                    product.images.forEach((imgSrc, index) => {
+                        const img = document.createElement('img');
+                        img.src = imgSrc;
+                        img.alt = `${product.name} thumbnail ${index + 1}`;
+                        img.className = 'thumbnail-image';
+                        if (index === 0) {
+                            img.classList.add('active');
+                        }
+                        img.addEventListener('click', () => {
+                            detailMainImage.src = imgSrc;
+                            document.querySelectorAll('.thumbnail-image').forEach(thumb => thumb.classList.remove('active'));
+                            img.classList.add('active');
+                        });
+                        detailThumbnails.appendChild(img);
+                    });
+
+                    detailProductTitle.textContent = product.name;
+                    detailProductPrice.textContent = product.price;
+                    detailProductDescription.textContent = product.description;
+
+                    // Set the size chart image
+                    const sizeChartImage = document.getElementById('size-chart-image');
+                    if (product.sizeChart) {
+                        sizeChartImage.src = product.sizeChart;
+                        sizeChartImage.style.display = '';
+                    } else {
+                        sizeChartImage.src = '';
+                        sizeChartImage.style.display = 'none';
+                    }
+
+                    productDetailView.style.display = 'grid';
+                }
+            }
+
+            /**
+             * Handles clicks on navigation links in the header and mobile menu.
+             * @param {Event} event - The click event.
+             */
+            function handleNavClick(event) {
+                const clickedLink = event.target.closest('.nav-link');
+                if (clickedLink) {
+                    event.preventDefault();
+                    const selectedCategory = clickedLink.dataset.category;
+                    
+                    if (selectedCategory === 'All') {
+                        switchView('home');
+                    } else {
+                        switchView('list', selectedCategory);
+                    }
+                    
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+            
+            /**
+             * Handles clicks on the dynamically created category buttons.
+             * @param {Event} event - The click event.
+             */
+            function handleCategoryButtonClick(event) {
+                 const clickedButton = event.target.closest('.category-button');
+                 if(clickedButton) {
+                    const selectedCategory = clickedButton.dataset.category;
+                    switchView('list', selectedCategory);
+                 }
+            }
+
+            /**
+             * Handles the search form submission.
+             * @param {Event} event - The submit event.
+             */
+            function handleSearch(event) {
+                event.preventDefault();
+                const query = searchInput.value.trim().toLowerCase();
+                if (!query) return;
+
+                const searchResults = products.filter(product => 
+                    product.name.toLowerCase().includes(query)
+                );
+                
+                switchView('search', { query: searchInput.value, results: searchResults });
+                searchInput.value = ''; // Clear the search bar
+            }
+
+            /*
+                *************************************************************************************
+                * Event Listeners for User Interactions
+                *************************************************************************************
+            */
+
+            mainNav.addEventListener('click', handleNavClick);
+            mobileMenu.addEventListener('click', handleNavClick);
+            categoryButtonsContainer.addEventListener('click', handleCategoryButtonClick);
+            searchForm.addEventListener('submit', handleSearch);
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            productGrid.addEventListener('click', function(event) {
+                const productCard = event.target.closest('.product-card');
+                if (productCard) {
+                    const productId = parseInt(productCard.dataset.productId, 10);
+                    switchView('detail', productId);
+                }
+            });
+
+            backToProductsButton.addEventListener('click', () => {
+                const currentActiveCategoryLink = document.querySelector('.nav-link.active');
+                const currentCategory = currentActiveCategoryLink ? currentActiveCategoryLink.dataset.category : 'All';
+                 if (currentCategory === 'All') {
+                    switchView('home');
+                } else {
+                    switchView('list', currentCategory);
+                }
+            });
+
+            // --- Start of Magnifier Code ---
+
+            // Find the magnify toggle button in your HTML
+            const magnifyBtn = document.getElementById('magnify-toggle-btn');
+            // This variable will hold the function that cleans up the magnifier
+            let magnifyCleanup = null;
+
+            /**
+             * Creates a magnifying glass effect for an image and returns a cleanup function.
+             * @param {string} imgID - The ID of the image to magnify.
+             * @param {number} zoom - The zoom level.
+             * @returns {Function|null} A function that removes the magnifier, or null if the image isn't found.
+             */
+            function createMagnifier(imgID, zoom) {
+                const img = document.getElementById(imgID);
+                if (!img) return null;
+
+                // Remove any existing magnifier glass
+                const oldGlass = img.parentElement.querySelector('.img-magnifier-glass');
+                if (oldGlass) oldGlass.remove();
+
+                // Create the magnifier lens element
+                const glass = document.createElement("DIV");
+                glass.setAttribute("class", "img-magnifier-glass");
+                
+                // Insert the lens into the DOM
+                img.parentElement.insertBefore(glass, img);
+                
+                // Set background properties for the lens to create the zoom effect
+                glass.style.backgroundImage = "url('" + img.src + "')";
+                glass.style.backgroundRepeat = "no-repeat";
+                glass.style.backgroundSize = (img.width * zoom) + "px " + (img.height * zoom) + "px";
+                const bw = 3;
+                const w = glass.offsetWidth / 2;
+                const h = glass.offsetHeight / 2;
+
+                // This function moves the magnifier lens with the cursor
+                const moveMagnifier = (e) => {
+                    e.preventDefault();
+                    const pos = getCursorPos(e);
+                    let x = pos.x;
+                    let y = pos.y;
+                    // Prevent the lens from going outside the image boundaries
+                    if (x > img.width - (w / zoom)) { x = img.width - (w / zoom); }
+                    if (x < w / zoom) { x = w / zoom; }
+                    if (y > img.height - (h / zoom)) { y = img.height - (h / zoom); }
+                    if (y < h / zoom) { y = h / zoom; }
+                    // Position the lens
+                    glass.style.left = (x - w) + "px";
+                    glass.style.top = (y - h) + "px";
+                    // Position the background image inside the lens
+                    glass.style.backgroundPosition = "-" + ((x * zoom) - w + bw) + "px -" + ((y * zoom) - h + bw) + "px";
+                };
+                
+                // This function gets the cursor's position relative to the image
+                const getCursorPos = (e) => {
+                    let a, x = 0, y = 0;
+                    e = e || window.event;
+                    a = img.getBoundingClientRect();
+                    x = e.pageX - a.left - window.pageXOffset;
+                    y = e.pageY - a.top - window.pageYOffset;
+                    return { x: x, y: y };
+                };
+
+                // Add event listeners for mouse and touch movement
+                glass.addEventListener("mousemove", moveMagnifier);
+                img.addEventListener("mousemove", moveMagnifier);
+                glass.addEventListener("touchmove", moveMagnifier);
+                img.addEventListener("touchmove", moveMagnifier);
+
+                // Return a "cleanup" function to remove the lens and its listeners
+                return () => {
+                    glass.removeEventListener("mousemove", moveMagnifier);
+                    img.removeEventListener("mousemove", moveMagnifier);
+                    glass.removeEventListener("touchmove", moveMagnifier);
+                    img.removeEventListener("touchmove", moveMagnifier);
+                    glass.remove();
+                };
+            }
+
+            // Add a click listener to the magnify toggle button
+            magnifyBtn.addEventListener('click', () => {
+                if (magnifyCleanup) {
+                    // If the magnifier is active, run the cleanup function to remove it
+                    magnifyCleanup();
+                    magnifyCleanup = null;
+                    magnifyBtn.classList.remove('active');
+                } else {
+                    // If the magnifier is not active, create a new one
+                    // The '3' is the zoom level. You can change this value.
+                    magnifyCleanup = createMagnifier('detail-main-image', 3);
+                    magnifyBtn.classList.add('active');
+                }
+            });
+
+            // --- Example of how to handle thumbnail clicks ---
+
+            const thumbnailContainer = document.getElementById('detail-thumbnails');
+            const mainImage = document.getElementById('detail-main-image');
+
+            thumbnailContainer.addEventListener('click', (event) => {
+                if (event.target.classList.contains('thumbnail-image')) {
+                    // Get the new image source from the clicked thumbnail
+                    const newImageSrc = event.target.src;
+                    
+                    // Update the main image
+                    mainImage.src = newImageSrc;
+                    
+                    // Deactivate all thumbnails and activate the clicked one
+                    document.querySelectorAll('.thumbnail-image').forEach(thumb => thumb.classList.remove('active'));
+                    event.target.classList.add('active');
+
+                    // IMPORTANT: If the magnifier is active, you must destroy the old one
+                    // before the main image source changes.
+                    if (magnifyCleanup) {
+                        magnifyCleanup();
+                        magnifyCleanup = null; // Reset the cleanup function
+                        // Re-create the magnifier for the new image
+                        magnifyCleanup = createMagnifier('detail-main-image', 3);
+                    }
+                }
+            });
+
+            // --- End of Magnifier Code ---
+
+            /*
+                *************************************************************************************
+                * Initial Page Load Setup
+                *************************************************************************************
+            */
+
+            renderCategoryButtons();
+            switchView('home');
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
+    </script>
+
+</body>
+</html>
