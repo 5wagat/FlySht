@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Product Showcase</title>
+    <title>FLY SHT</title>
     <!--
         *************************************************************************************
         * Project: Minimal Product Showcase Website (FLY SHT)
@@ -171,6 +171,10 @@
             background-color: #ffffff; /* Very light gray background for image area */
             padding: 1rem; /* Padding around the image inside the card's image area */
         }
+        /* Style for lazy loading images to prevent layout shift */
+        img.lazy {
+            background-color: #f0f0f0;
+        }
         /* Styling for the text content area below the product image in grid view */
         .product-card .p-4 {
             padding: 0.5rem 1rem; /* Reduced padding for text below image to match tighter spacing */
@@ -207,12 +211,21 @@
         header nav a:hover {
             color: #000000; /* Black on hover */
         }
+
+        /* Styling for the category title section header */
+        #category-title-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
         /* Styling for the prominent current category title */
         #current-category-title {
             font-size: 2.25rem; /* text-4xl equivalent */
             font-weight: 700; /* font-bold equivalent */
             color: #000000; /* Black color for the category title */
-            margin-bottom: 2rem; /* Margin below the category title */
+            margin: 0; /* Remove default margins */
         }
         
         /* Styles for the "How to Buy" guide section */
@@ -302,6 +315,31 @@
             background-color: #5783db;
         }
 
+        /* Styles for the filter button and dropdown */
+        #filter-container {
+            position: relative;
+        }
+        .filter-button {
+            background-color: #001BFF;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .filter-button:hover {
+            background-color: #5783db;
+        }
+        #filter-dropdown {
+            border: 1px solid #DFE0E2;
+        }
+
         /*
             *************************************************************************************
             * Styles for the Product Detail View
@@ -326,6 +364,13 @@
             align-items: center;
             gap: 1rem;
         }
+        
+        /* Container for the main image with magnifier */
+        .img-magnifier-container {
+            position: relative;
+            max-width: 400px;
+            width: 100%;
+        }
 
         /* Styling for the main product image in the detail view */
         #detail-main-image {
@@ -337,6 +382,49 @@
             background-color: #ffffff;
             padding: 1rem;
         }
+        
+        /* Magnifying glass lens style */
+        .img-magnifier-glass {
+             position: absolute;
+             border: 3px solid #001BFF; /* Lens border color */
+             border-radius: 50%;
+                cursor: none;
+             width: 150px; /* Size of the lens */
+             height: 150px;
+        }
+
+        /* Magnify toggle button */
+        #magnify-toggle-btn {
+             position: absolute;
+             bottom: 12px;
+             right: 12px;
+             left: auto;
+             top: auto;
+             z-index: 10;
+             background-color: rgba(255, 255, 255, 0.8);
+             border: 1px solid #ffffff;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             cursor: pointer;
+             transition: background-color 0.2s, color 0.2s;
+        }
+        #magnify-toggle-btn:hover {
+            background-color: white;
+        }
+        #magnify-toggle-btn.active {
+             background-color: #001BFF; /* Active color */
+             color: white;
+             border-color: #5783db;
+        }
+        #magnify-toggle-btn .icon-magnify { display: block; }
+        #magnify-toggle-btn .icon-close { display: none; }
+        #magnify-toggle-btn.active .icon-magnify { display: none; }
+        #magnify-toggle-btn.active .icon-close { display: block; }
+
 
         /* Container for thumbnail images */
         #detail-thumbnails {
@@ -351,6 +439,7 @@
         .thumbnail-image {
             width: 100%;
             height: auto;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
             border: 2px solid transparent;
             cursor: pointer;
@@ -390,7 +479,18 @@
             font-size: 1rem; /* Standard text size */
             color: #4a5568; /* Slightly lighter gray for description text */
             line-height: 1.6; /* Improved readability */
-            margin-bottom: 2rem; /* Spacing below description */
+            margin-bottom: 1rem;
+        }
+        
+        /* Styling for the size chart section */
+        #size-chart-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        #size-chart-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e5e7eb;
         }
 
         /* Styling for the "Back to Products" button */
@@ -409,76 +509,6 @@
         /* Hover effect for the "Back to Products" button */
         .back-button:hover {
             background-color: #DFE0E2; /* Slightly darker gray on hover */
-        }
-        /* Container for the main image to position the magnifier button and lens */
-        .img-magnifier-container {
-            position: relative;
-            max-width: 400px; /* Adjust to your main image's max width */
-            width: 100%;
-        }
-        /* The magnifying glass lens */
-        .img-magnifier-glass {
-             position: absolute;
-             border: 3px solid #001BFF; /* Lens border color */
-             border-radius: 50%;
-                cursor: none;
-             width: 150px; /* Size of the lens */
-             height: 150px;
-        }
-        /* The button to turn the magnifier on/off */
-        #magnify-toggle-btn {
-             position: absolute;
-             bottom: 12px;    /* Changed from top: 12px; */
-             right: 12px;     /* Changed from left: 12px; */
-             left: auto;      /* Reset left */
-             top: auto;       /* Reset top */
-             z-index: 10;
-             background-color: rgba(255, 255, 255, 0.8);
-             border: 1px solid #ffffff;
-             border-radius: 50%;
-             width: 40px;
-             height: 40px;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             cursor: pointer;
-             transition: background-color 0.2s, color 0.2s;
-        }
-        #magnify-toggle-btn:hover {
-            background-color: white;
-        }
-        /* Style for when the magnifier is active */
-        #magnify-toggle-btn.active {
-             background-color: #001BFF; /* Active color */
-             color: white;
-             border-color: #5783db;
-        }
-
-        /* Logic to switch between magnify and close icons */
-        #magnify-toggle-btn .icon-magnify { display: block; }
-        #magnify-toggle-btn .icon-close { display: none; }
-        #magnify-toggle-btn.active .icon-magnify { display: none; }
-        #magnify-toggle-btn.active .icon-close { display: block; }
-
-        /* Styling for thumbnail images (optional but recommended) */
-        #detail-thumbnails {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-            max-width: 400px; /* Match the main image container width */
-            width: 100%;
-        }
-        .thumbnail-image {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        .thumbnail-image.active {
-            border-color: #001BFF; /* Highlight color for active thumbnail */
         }
     </style>
 </head>
@@ -583,9 +613,22 @@
             <p>By following this comprehensive guide, you'll be well-equipped to navigate the process of buying items from AllChinaBuy. Remember to join relevant communities, utilize the available tools, and make informed decisions when selecting products and shipping methods. Happy shopping!</p>
         </section>
 
-        <!-- Section for the current category title (visible in list view) -->
-        <section id="category-title-section" class="mb-10 text-center" style="display: none;">
-            <h2 id="current-category-title" class="text-4xl font-bold text-gray-900 mb-8"></h2>
+        <!-- Section for the current category title and filter (visible in list view) -->
+        <section id="category-title-section" class="mb-10" style="display: none;">
+            <div id="category-title-header">
+                <h2 id="current-category-title"></h2>
+                <div id="filter-container">
+                    <button id="filter-btn" class="filter-button">
+                        <span>Sort By</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="default">Default</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="high-low">Price: High to Low</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="low-high">Price: Low to High</a>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Product List View (Grid) -->
@@ -598,22 +641,17 @@
         <!-- Product Detail View (Hidden by default) -->
         <section id="product-detail-view" class="grid md:grid-cols-2 gap-8">
             <div class="product-detail-image-container">
-                <!-- Main Image Container with Magnifier Button -->
                 <div class="img-magnifier-container">
                     <img id="detail-main-image" src="" alt="Main Product Image">
-                    <!-- Magnify Toggle Button -->
                     <button id="magnify-toggle-btn" title="Toggle Zoom">
-                        <!-- Magnify Icon -->
                         <svg class="icon-magnify w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
                         </svg>
-                        <!-- Close Icon -->
                         <svg class="icon-close w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <!-- Thumbnails Container -->
                 <div id="detail-thumbnails">
                     <!-- Thumbnails will be injected here -->
                 </div>
@@ -622,10 +660,8 @@
                 <h2 id="detail-product-title" class="text-4xl font-bold text-gray-900"></h2>
                 <p id="detail-product-price" class="price"></p>
                 <p id="detail-product-description" class="description"></p>
-                <!-- Size Chart Section -->
-                <div id="size-chart-section" style="margin-bottom:2rem;">
-                    <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:0.5rem;">Size Chart</h3>
-                    <img id="size-chart-image" src="" alt="Size Chart" style="max-width:100%;border:1px solid #DFE0E2;">
+                <div id="size-chart-container">
+                    <img id="size-chart-image" src="" alt="Size Chart">
                 </div>
                 <button id="back-to-products-button" class="back-button mt-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -659,14 +695,14 @@
                     category: "Jackets",
                     price: "¥89.20",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Jacket+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Jacket+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Jacket+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Jacket+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Jacket+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Jacket+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Jacket+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Jacket+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Jacket+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Jacket+5"
                     ],
                     description: "The Arc'teryx LEAF Alpha Gen 2 Jacket is a highly durable and weather-resistant shell designed for extreme conditions. It features a rugged GORE-TEX fabric for maximum protection against rain and wind, while remaining breathable. Ideal for tactical operations and harsh outdoor environments, providing superior performance and comfort.",
-                    sizeChart: "https://placehold.co/400x200?text=Jacket+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Jacket+Size+Chart"
                 },
                 {
                     id: 2,
@@ -674,14 +710,14 @@
                     category: "Jackets",
                     price: "¥85.20",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Jacket+LT+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Jacket+LT+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Jacket+LT+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Jacket+LT+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Jacket+LT+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Jacket+LT+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Jacket+LT+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Jacket+LT+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Jacket+LT+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Jacket+LT+5"
                     ],
                     description: "A versatile and lightweight jacket, the Arc'teryx Beta LT is engineered for a variety of mountain activities. Its minimalist design and packable nature make it an excellent choice for those seeking performance without bulk. Offers essential weather protection and breathability for changing conditions.",
-                    sizeChart: "https://placehold.co/400x200?text=Jacket+LT+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Jacket+Size+Chart"
                 },
                 {
                     id: 3,
@@ -689,14 +725,14 @@
                     category: "Jackets",
                     price: "¥85.20",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Beams+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Beams+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Beams+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Beams+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Beams+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Beams+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Beams+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Beams+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Beams+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Beams+5"
                     ],
                     description: "A unique collaboration between Arc'teryx and Beams, this Beta Jacket combines techhnical performance with urban style. ",
-                    sizeChart: "https://placehold.co/400x200?text=Beams+Jacket+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Beams+Jacket+Size+Chart"
                 },
                 {
                     id: 4,
@@ -704,14 +740,14 @@
                     category: "Jackets",
                     price: "¥85.20",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Beams+Two+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Beams+Two+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Beams+Two+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Beams+Two+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Beams+Two+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Beams+Two+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Beams+Two+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Beams+Two+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Beams+Two+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Beams+Two+5"
                     ],
                     description: "Another exclusive collaboration, the Arc'teryx + Beams Beta Jacket #2 features a subtle color palette and all the technical prowess expected from Arc'teryx. It's a highly functional shell that provides excellent weather resistance and comfort, suitable for both city life and rugged trails.",
-                    sizeChart: "https://placehold.co/400x200?text=Beams+Two+Jacket+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Beams+Two+Jacket+Size+Chart"
                 },
                 {
                     id: 5,
@@ -719,14 +755,14 @@
                     category: "Shoes",
                     price: "¥75.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=AF1+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=AF1+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=AF1+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=AF1+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=AF1+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=AF1+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=AF1+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=AF1+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=AF1+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=AF1+5"
                     ],
                     description: "The iconic Nike Air Force 1, a timeless classic in sneaker culture. Known for its clean lines, durable construction, and comfortable Air cushioning, it's a versatile shoe that complements any style. A must-have for sneaker enthusiasts and casual wear alike.",
-                    sizeChart: "https://placehold.co/400x200?text=AF1+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x300/f0f0f0/000000?text=Shoe+Size+Chart"
                 },
                 {
                     id: 6,
@@ -734,14 +770,14 @@
                     category: "Shoes",
                     price: "¥120.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=UB+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=UB+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=UB+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=UB+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=UB+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=UB+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=UB+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=UB+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=UB+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=UB+5"
                     ],
                     description: "Experience ultimate comfort and energy return with the Adidas Ultraboost 22. Designed with a responsive Boost midsole and a supportive Primeknit upper, these running shoes provide an unparalleled ride for daily runs or long distances. Perfect for athletes seeking peak performance.",
-                    sizeChart: "https://placehold.co/400x200?text=UB+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x300/f0f0f0/000000?text=Shoe+Size+Chart"
                 },
                 {
                     id: 7,
@@ -749,14 +785,14 @@
                     category: "Hoodies/Sweaters",
                     price: "¥150.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Supreme+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Supreme+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Supreme+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Supreme+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Supreme+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Supreme+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Supreme+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Supreme+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Supreme+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Supreme+5"
                     ],
                     description: "The highly coveted Supreme Box Logo Hoodie in vibrant red. Crafted from premium heavyweight cotton, this iconic piece features the signature embroidered box logo. A staple for streetwear enthusiasts, offering both comfort and an unmistakable statement.",
-                    sizeChart: "https://placehold.co/400x200?text=Supreme+Hoodie+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Hoodie+Size+Chart"
                 },
                 {
                     id: 8,
@@ -764,14 +800,14 @@
                     category: "Hoodies/Sweaters",
                     price: "¥130.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Kith+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Kith+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Kith+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Kith+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Kith+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Kith+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Kith+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Kith+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Kith+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Kith+5"
                     ],
                     description: "The Kith Williams III Hoodie combines a classic silhouette with premium craftsmanship. Made from custom-milled fleece, it offers exceptional softness and warmth. Features subtle Kith branding, making it a versatile and comfortable addition to any wardrobe.",
-                    sizeChart: "https://placehold.co/400x200?text=Kith+Hoodie+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Hoodie+Size+Chart"
                 },
                 {
                     id: 9,
@@ -779,14 +815,14 @@
                     category: "T-Shirts",
                     price: "¥25.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Tee+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Tee+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Tee+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Tee+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Tee+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Tee+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Tee+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Tee+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Tee+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Tee+5"
                     ],
                     description: "An essential basic crewneck t-shirt, perfect for everyday wear. Made from soft, breathable cotton, it offers a comfortable fit and a versatile foundation for any outfit. A wardrobe staple that combines simplicity with quality.",
-                    sizeChart: "https://placehold.co/400x200?text=Tee+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=T-Shirt+Size+Chart"
                 },
                 {
                     id: 10,
@@ -794,14 +830,14 @@
                     category: "T-Shirts",
                     price: "¥30.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Band+Tee+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Band+Tee+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Band+Tee+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Band+Tee+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Band+Tee+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Band+Tee+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Band+Tee+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Band+Tee+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Band+Tee+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Band+Tee+5"
                     ],
                     description: "Show off your style with this unique graphic band tee. Featuring a vintage-inspired print on soft, pre-shrunk cotton, it offers a comfortable and stylish look. Perfect for music lovers and those who appreciate unique apparel.",
-                    sizeChart: "https://placehold.co/400x200?text=Band+Tee+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=T-Shirt+Size+Chart"
                 },
                 {
                     id: 11,
@@ -809,14 +845,14 @@
                     category: "Pants/Shorts",
                     price: "¥60.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Cargo+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Cargo+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Cargo+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Cargo+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Cargo+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Cargo+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Cargo+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Cargo+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Cargo+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Cargo+5"
                     ],
                     description: "Durable and functional cargo pants designed for utility and comfort. Multiple pockets provide ample storage, while the relaxed fit ensures freedom of movement. Ideal for outdoor activities or a rugged casual look.",
-                    sizeChart: "https://placehold.co/400x200?text=Cargo+Pants+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Pants/Shorts+Size+Chart"
                 },
                 {
                     id: 12,
@@ -824,14 +860,14 @@
                     category: "Pants/Shorts",
                     price: "¥45.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Denim+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Denim+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Denim+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Denim+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Denim+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Denim+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Denim+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Denim+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Denim+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Denim+5"
                     ],
                     description: "Classic denim shorts, perfect for warm weather. Made from comfortable, high-quality denim with a timeless design, these shorts offers a relaxed fit for all-day comfort. A versatile addition to your summer wardrobe.",
-                    sizeChart: "https://placehold.co/400x200?text=Denim+Shorts+Size+Chart"
+                    sizeChartUrl: "https://placehold.co/800x400/f0f0f0/000000?text=Pants/Shorts+Size+Chart"
                 },
                 {
                     id: 13,
@@ -839,14 +875,13 @@
                     category: "Headwear",
                     price: "¥20.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Cap+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Cap+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Cap+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Cap+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Cap+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Cap+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Cap+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Cap+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Cap+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Cap+5"
                     ],
-                    description: "A classic snapback cap with an adjustable fit. Features a structured crown and flat brim, perfect for adding a sporty or casual touch to your outfit. Available in various colors to match your style.",
-                    sizeChart: "https://placehold.co/400x200?text=Snapback+Cap+Size+Chart"
+                    description: "A classic snapback cap with an adjustable fit. Features a structured crown and flat brim, perfect for adding a sporty or casual touch to your outfit. Available in various colors to match your style."
                 },
                 {
                     id: 14,
@@ -854,14 +889,13 @@
                     category: "Headwear",
                     price: "¥18.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Hat+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Hat+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Hat+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Hat+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Hat+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Hat+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Hat+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Hat+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Hat+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Hat+5"
                     ],
-                    description: "Stay stylish and protected with this trendy bucket hat. Made from soft, breathable fabric, it offers comfortable sun protection and a relaxed, casual vibe. A fashionable accessory for any outdoor adventure.",
-                    sizeChart: "https://placehold.co/400x200?text=Bucket+Hat+Size+Chart"
+                    description: "Stay stylish and protected with this trendy bucket hat. Made from soft, breathable fabric, it offers comfortable sun protection and a relaxed, casual vibe. A fashionable accessory for any outdoor adventure."
                 },
                 {
                     id: 15,
@@ -869,14 +903,13 @@
                     category: "Accessories",
                     price: "¥35.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Belt+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Belt+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Belt+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Belt+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Belt+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Belt+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Belt+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Belt+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Belt+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Belt+5"
                     ],
-                    description: "A high-quality genuine leather belt, perfect for completing any outfit. Features a classic buckle and durable construction, ensuring long-lasting wear and a sophisticated touch to your look.",
-                    sizeChart: "https://placehold.co/400x200?text=Leather+Belt+Size+Chart"
+                    description: "A high-quality genuine leather belt, perfect for completing any outfit. Features a classic buckle and durable construction, ensuring long-lasting wear and a sophisticated touch to your look."
                 },
                 {
                     id: 16,
@@ -884,14 +917,13 @@
                     category: "Accessories",
                     price: "¥28.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Sunnies+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Sunnies+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Sunnies+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Sunnies+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Sunnies+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Sunnies+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Sunnies+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Sunnies+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Sunnies+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Sunnies+5"
                     ],
-                    description: "Timeless Wayfarer-style sunglasses offering classic appeal and essential UV protection. Lightweight and comfortable, they are perfect for daily wear and add a touch of retro cool to your ensemble.",
-                    sizeChart: "https://placehold.co/400x200?text=Wayfarer+Sunglasses+Size+Chart"
+                    description: "Timeless Wayfarer-style sunglasses offering classic appeal and essential UV protection. Lightweight and comfortable, they are perfect for daily wear and add a touch of retro cool to your ensemble."
                 },
                 {
                     id: 17,
@@ -899,14 +931,13 @@
                     category: "Other Stuff",
                     price: "¥50.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Toy+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Toy+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Toy+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Toy+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Toy+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Toy+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Toy+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Toy+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Toy+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Toy+5"
                     ],
-                    description: "A limited edition collectible vinyl toy, perfect for enthusiasts and collectors. Features intricate detailing and a unique design, making it a standout piece for display or play. A must-have for any modern art toy collection.",
-                    sizeChart: "https://placehold.co/400x200?text=Collectible+Vinyl+Toy+Size+Chart"
+                    description: "A limited edition collectible vinyl toy, perfect for enthusiasts and collectors. Features intricate detailing and a unique design, making it a standout piece for display or play. A must-have for any modern art toy collection."
                 },
                 {
                     id: 18,
@@ -914,14 +945,13 @@
                     category: "Other Stuff",
                     price: "¥100.00",
                     images: [
-                        "https://placehold.co/400x300/ffffff/000000?text=Art+1",
-                        "https://placehold.co/400x300/e0e0e0/000000?text=Art+2",
-                        "https://placehold.co/400x300/cccccc/000000?text=Art+3",
-                        "https://placehold.co/400x300/bbbbbb/000000?text=Art+4",
-                        "https://placehold.co/400x300/aaaaaa/000000?text=Art+5"
+                        "https://placehold.co/600x600/ffffff/000000?text=Art+1",
+                        "https://placehold.co/600x600/e0e0e0/000000?text=Art+2",
+                        "https://placehold.co/600x600/cccccc/000000?text=Art+3",
+                        "https://placehold.co/600x600/bbbbbb/000000?text=Art+4",
+                        "https://placehold.co/600x600/aaaaaa/000000?text=Art+5"
                     ],
-                    description: "Elevate your space with this stunning limited edition art print. Printed on high-quality archival paper with vibrant, long-lasting inks, it captures the essence of contemporary art. Perfect for adding a unique touch to your home or office decor.",
-                    sizeChart: "https://placehold.co/400x200?text=Limited+Edition+Art+Print+Size+Chart"
+                    description: "Elevate your space with this stunning limited edition art print. Printed on high-quality archival paper with vibrant, long-lasting inks, it captures the essence of contemporary art. Perfect for adding a unique touch to your home or office decor."
                 }
             ];
 
@@ -938,15 +968,25 @@
             const mainNav = document.getElementById('main-nav');
             const mobileMenu = document.getElementById('mobile-menu');
             const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const filterBtn = document.getElementById('filter-btn');
+            const filterDropdown = document.getElementById('filter-dropdown');
 
             // Elements for the product detail view
+            const magnifyBtn = document.getElementById('magnify-toggle-btn');
             const detailMainImage = document.getElementById('detail-main-image');
             const detailThumbnails = document.getElementById('detail-thumbnails');
             const detailProductTitle = document.getElementById('detail-product-title');
             const detailProductPrice = document.getElementById('detail-product-price');
             const detailProductDescription = document.getElementById('detail-product-description');
+            const sizeChartContainer = document.getElementById('size-chart-container');
+            const sizeChartImage = document.getElementById('size-chart-image');
             const backToProductsButton = document.getElementById('back-to-products-button');
             const categoryTitleSection = document.getElementById('category-title-section');
+
+            // State variables
+            let magnifyCleanup = null;
+            let currentSort = 'default';
+            let activeProductList = [];
 
 
             // Dynamically extract all unique categories from the products data.
@@ -966,7 +1006,7 @@
                 productsToRender.forEach(product => {
                     const productCardHtml = `
                         <div class="product-card bg-white" data-product-id="${product.id}">
-                            <img src="${product.images[0]}" alt="${product.name}">
+                            <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="${product.images[0]}" alt="${product.name}">
                             <div class="p-4">
                                 <h3>${product.name}</h3>
                                 <p>${product.price}</p>
@@ -974,6 +1014,12 @@
                         </div>
                     `;
                     productGrid.insertAdjacentHTML('beforeend', productCardHtml);
+                });
+                
+                // After rendering, find all new lazy images and observe them
+                const lazyImages = document.querySelectorAll('.lazy');
+                lazyImages.forEach(image => {
+                    lazyLoadObserver.observe(image);
                 });
             }
 
@@ -1016,6 +1062,13 @@
              * @param {string|number|Array} [data] - The category, product ID, or search results for the view.
              */
             function switchView(view, data) {
+                 // Always clean up magnifier when switching views
+                if (magnifyCleanup) {
+                    magnifyCleanup();
+                    magnifyCleanup = null;
+                }
+                magnifyBtn.classList.remove('active');
+
                 // Hide all main sections first
                 howToBuySection.style.display = 'none';
                 categoryButtonsSection.style.display = 'none';
@@ -1027,18 +1080,22 @@
                     howToBuySection.style.display = 'block';
                     categoryButtonsSection.style.display = 'block';
                     updateActiveCategory('All');
-                } else if (view === 'list') {
+                } else if (view === 'list' || view === 'search') {
                     productListView.style.display = 'block';
                     categoryTitleSection.style.display = 'block';
-                    const categoryProducts = products.filter(p => p.category === data);
-                    renderProductCards(categoryProducts);
-                    updateActiveCategory(data);
-                } else if (view === 'search') {
-                    productListView.style.display = 'block';
-                    categoryTitleSection.style.display = 'block';
-                    renderProductCards(data.results);
-                    updateActiveCategory(''); // No category is active during search
-                    currentCategoryTitle.textContent = `Search Results for: "${data.query}"`;
+                    
+                    if (view === 'list') {
+                        activeProductList = products.filter(p => p.category === data);
+                        updateActiveCategory(data);
+                    } else { // search
+                        activeProductList = data.results;
+                        updateActiveCategory(''); 
+                        currentCategoryTitle.textContent = `Search Results for: "${data.query}"`;
+                    }
+                    
+                    currentSort = 'default';
+                    applySortAndRender();
+
                 } else if (view === 'detail') {
                     const productId = data;
                     const product = products.find(p => p.id === productId);
@@ -1057,6 +1114,11 @@
                             img.classList.add('active');
                         }
                         img.addEventListener('click', () => {
+                            if (magnifyCleanup) {
+                                magnifyCleanup();
+                                magnifyCleanup = null;
+                                magnifyBtn.classList.remove('active');
+                            }
                             detailMainImage.src = imgSrc;
                             document.querySelectorAll('.thumbnail-image').forEach(thumb => thumb.classList.remove('active'));
                             img.classList.add('active');
@@ -1067,20 +1129,99 @@
                     detailProductTitle.textContent = product.name;
                     detailProductPrice.textContent = product.price;
                     detailProductDescription.textContent = product.description;
-
-                    // Set the size chart image
-                    const sizeChartImage = document.getElementById('size-chart-image');
-                    if (product.sizeChart) {
-                        sizeChartImage.src = product.sizeChart;
-                        sizeChartImage.style.display = '';
+                    
+                    if (product.sizeChartUrl) {
+                        sizeChartImage.src = product.sizeChartUrl;
+                        sizeChartContainer.style.display = 'block';
                     } else {
-                        sizeChartImage.src = '';
-                        sizeChartImage.style.display = 'none';
+                        sizeChartContainer.style.display = 'none';
                     }
 
                     productDetailView.style.display = 'grid';
                 }
             }
+            
+            /**
+             * Sorts and renders the `activeProductList`.
+             */
+            function applySortAndRender() {
+                const productsToSort = [...activeProductList];
+                let sortedProducts = productsToSort;
+
+                if (currentSort === 'high-low') {
+                    sortedProducts.sort((a, b) => parseFloat(b.price.replace('¥', '')) - parseFloat(a.price.replace('¥', '')));
+                } else if (currentSort === 'low-high') {
+                    sortedProducts.sort((a, b) => parseFloat(a.price.replace('¥', '')) - parseFloat(b.price.replace('¥', '')));
+                }
+                
+                renderProductCards(sortedProducts);
+            }
+
+            /**
+             * Creates a magnifying glass effect for an image and returns a cleanup function.
+             * @param {string} imgID - The ID of the image to magnify.
+             * @param {number} zoom - The zoom level.
+             * @returns {Function} A function that removes the magnifier and its event listeners.
+             */
+            function createMagnifier(imgID, zoom) {
+                const img = document.getElementById(imgID);
+                if (!img) return null;
+
+                const glass = document.createElement("DIV");
+                glass.setAttribute("class", "img-magnifier-glass");
+                
+                img.parentElement.insertBefore(glass, img);
+                
+                glass.style.backgroundImage = "url('" + img.src + "')";
+                glass.style.backgroundRepeat = "no-repeat";
+                glass.style.backgroundSize = (img.width * zoom) + "px " + (img.height * zoom) + "px";
+                const bw = 3;
+                const w = glass.offsetWidth / 2;
+                const h = glass.offsetHeight / 2;
+
+                const moveMagnifier = (e) => {
+                    e.preventDefault();
+                    const pos = getCursorPos(e);
+                    let x = pos.x;
+                    let y = pos.y;
+                    if (x > img.width - (w / zoom)) { x = img.width - (w / zoom); }
+                    if (x < w / zoom) { x = w / zoom; }
+                    if (y > img.height - (h / zoom)) { y = img.height - (h / zoom); }
+                    if (y < h / zoom) { y = h / zoom; }
+                    glass.style.left = (x - w) + "px";
+                    glass.style.top = (y - h) + "px";
+                    glass.style.backgroundPosition = "-" + ((x * zoom) - w + bw) + "px -" + ((y * zoom) - h + bw) + "px";
+                };
+                
+                const getCursorPos = (e) => {
+                    let a, x = 0, y = 0;
+                    e = e || window.event;
+                    a = img.getBoundingClientRect();
+                    if (e.changedTouches) {
+                        x = e.changedTouches[0].pageX - a.left - window.pageXOffset;
+                        y = e.changedTouches[0].pageY - a.top - window.pageYOffset;
+                    } else {
+                        x = e.pageX - a.left - window.pageXOffset;
+                        y = e.pageY - a.top - window.pageYOffset;
+                    }
+                    return { x: x, y: y };
+                };
+
+                glass.addEventListener("mousemove", moveMagnifier);
+                img.addEventListener("mousemove", moveMagnifier);
+                glass.addEventListener("touchmove", moveMagnifier, { passive: false });
+                img.addEventListener("touchmove", moveMagnifier, { passive: false });
+
+                // Return a cleanup function
+                return () => {
+                    glass.removeEventListener("mousemove", moveMagnifier);
+                    img.removeEventListener("mousemove", moveMagnifier);
+                    glass.removeEventListener("touchmove", moveMagnifier);
+                    img.removeEventListener("touchmove", moveMagnifier);
+                    glass.remove();
+                };
+            }
+
 
             /**
              * Handles clicks on navigation links in the header and mobile menu.
@@ -1164,136 +1305,53 @@
                 }
             });
 
-            // --- Start of Magnifier Code ---
-
-            // Find the magnify toggle button in your HTML
-            const magnifyBtn = document.getElementById('magnify-toggle-btn');
-            // This variable will hold the function that cleans up the magnifier
-            let magnifyCleanup = null;
-
-            /**
-             * Creates a magnifying glass effect for an image and returns a cleanup function.
-             * @param {string} imgID - The ID of the image to magnify.
-             * @param {number} zoom - The zoom level.
-             * @returns {Function|null} A function that removes the magnifier, or null if the image isn't found.
-             */
-            function createMagnifier(imgID, zoom) {
-                const img = document.getElementById(imgID);
-                if (!img) return null;
-
-                // Remove any existing magnifier glass
-                const oldGlass = img.parentElement.querySelector('.img-magnifier-glass');
-                if (oldGlass) oldGlass.remove();
-
-                // Create the magnifier lens element
-                const glass = document.createElement("DIV");
-                glass.setAttribute("class", "img-magnifier-glass");
-                
-                // Insert the lens into the DOM
-                img.parentElement.insertBefore(glass, img);
-                
-                // Set background properties for the lens to create the zoom effect
-                glass.style.backgroundImage = "url('" + img.src + "')";
-                glass.style.backgroundRepeat = "no-repeat";
-                glass.style.backgroundSize = (img.width * zoom) + "px " + (img.height * zoom) + "px";
-                const bw = 3;
-                const w = glass.offsetWidth / 2;
-                const h = glass.offsetHeight / 2;
-
-                // This function moves the magnifier lens with the cursor
-                const moveMagnifier = (e) => {
-                    e.preventDefault();
-                    const pos = getCursorPos(e);
-                    let x = pos.x;
-                    let y = pos.y;
-                    // Prevent the lens from going outside the image boundaries
-                    if (x > img.width - (w / zoom)) { x = img.width - (w / zoom); }
-                    if (x < w / zoom) { x = w / zoom; }
-                    if (y > img.height - (h / zoom)) { y = img.height - (h / zoom); }
-                    if (y < h / zoom) { y = h / zoom; }
-                    // Position the lens
-                    glass.style.left = (x - w) + "px";
-                    glass.style.top = (y - h) + "px";
-                    // Position the background image inside the lens
-                    glass.style.backgroundPosition = "-" + ((x * zoom) - w + bw) + "px -" + ((y * zoom) - h + bw) + "px";
-                };
-                
-                // This function gets the cursor's position relative to the image
-                const getCursorPos = (e) => {
-                    let a, x = 0, y = 0;
-                    e = e || window.event;
-                    a = img.getBoundingClientRect();
-                    x = e.pageX - a.left - window.pageXOffset;
-                    y = e.pageY - a.top - window.pageYOffset;
-                    return { x: x, y: y };
-                };
-
-                // Add event listeners for mouse and touch movement
-                glass.addEventListener("mousemove", moveMagnifier);
-                img.addEventListener("mousemove", moveMagnifier);
-                glass.addEventListener("touchmove", moveMagnifier);
-                img.addEventListener("touchmove", moveMagnifier);
-
-                // Return a "cleanup" function to remove the lens and its listeners
-                return () => {
-                    glass.removeEventListener("mousemove", moveMagnifier);
-                    img.removeEventListener("mousemove", moveMagnifier);
-                    glass.removeEventListener("touchmove", moveMagnifier);
-                    img.removeEventListener("touchmove", moveMagnifier);
-                    glass.remove();
-                };
-            }
-
-            // Add a click listener to the magnify toggle button
             magnifyBtn.addEventListener('click', () => {
                 if (magnifyCleanup) {
-                    // If the magnifier is active, run the cleanup function to remove it
                     magnifyCleanup();
                     magnifyCleanup = null;
                     magnifyBtn.classList.remove('active');
                 } else {
-                    // If the magnifier is not active, create a new one
-                    // The '3' is the zoom level. You can change this value.
                     magnifyCleanup = createMagnifier('detail-main-image', 3);
                     magnifyBtn.classList.add('active');
                 }
             });
 
-            // --- Example of how to handle thumbnail clicks ---
+            filterBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                filterDropdown.classList.toggle('hidden');
+            });
 
-            const thumbnailContainer = document.getElementById('detail-thumbnails');
-            const mainImage = document.getElementById('detail-main-image');
-
-            thumbnailContainer.addEventListener('click', (event) => {
-                if (event.target.classList.contains('thumbnail-image')) {
-                    // Get the new image source from the clicked thumbnail
-                    const newImageSrc = event.target.src;
-                    
-                    // Update the main image
-                    mainImage.src = newImageSrc;
-                    
-                    // Deactivate all thumbnails and activate the clicked one
-                    document.querySelectorAll('.thumbnail-image').forEach(thumb => thumb.classList.remove('active'));
-                    event.target.classList.add('active');
-
-                    // IMPORTANT: If the magnifier is active, you must destroy the old one
-                    // before the main image source changes.
-                    if (magnifyCleanup) {
-                        magnifyCleanup();
-                        magnifyCleanup = null; // Reset the cleanup function
-                        // Re-create the magnifier for the new image
-                        magnifyCleanup = createMagnifier('detail-main-image', 3);
-                    }
+            filterDropdown.addEventListener('click', (event) => {
+                if (event.target.tagName === 'A') {
+                    event.preventDefault();
+                    currentSort = event.target.dataset.sort;
+                    filterDropdown.classList.add('hidden');
+                    applySortAndRender();
+                }
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (!filterBtn.contains(e.target)) {
+                    filterDropdown.classList.add('hidden');
                 }
             });
 
-            // --- End of Magnifier Code ---
-
             /*
                 *************************************************************************************
-                * Initial Page Load Setup
+                * Initial Page Load Setup & Lazy Loading
                 *************************************************************************************
             */
+            
+            const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        observer.unobserve(img);
+                    }
+                });
+            });
 
             renderCategoryButtons();
             switchView('home');
